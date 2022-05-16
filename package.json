@@ -1,0 +1,22 @@
+{
+  "name": "api.video.xwu.us",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:wuxinli1025/api.video.xwu.us.git",
+  "author": "Xinli WU <ryan7gm@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "dev": "nodemon index.js",
+    "build": "webpack --config webpack.config.js",
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.1",
+    "fluent-ffmpeg": "^2.1.2",
+    "luxon": "^2.4.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.16"
+  }
+}
