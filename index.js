@@ -10,3 +10,5 @@ app.use('/video', video);
 app.listen(port, () => {
   console.log(`API listening on port ${port}`);
 });
+
+module.exports = app;
