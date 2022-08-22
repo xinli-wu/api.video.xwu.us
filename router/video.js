@@ -26,9 +26,6 @@ router.get('/:key', async (req, res) => {
 
   const meta = await sizeOf(bucketParams);
 
-  console.log({ s3Env });
-  console.log({ meta });
-
   const { ContentLength, ContentType } = meta;
 
   // Create the smart stream
