@@ -7,8 +7,8 @@
   "license": "MIT",
   "scripts": {
     "dev": "nodemon index.js",
-    "build": "./node_modules/.bin/esbuild index.js --bundle --minify --platform=node --external:./node_modules/* --outfile=dist/index.js",
-    "start": "node dist/index.js"
+    "build": "esbuild index.js --bundle --minify --platform=node --external:./node_modules/* --outfile=dist/index.js",
+    "start": "node index.js"
   },
   "dependencies": {
     "aws-sdk": "^2.1199.0",
