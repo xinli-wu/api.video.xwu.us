@@ -5,6 +5,11 @@ const { DateTime } = require("luxon");
 const { sizeOf, createAWSStream } = require('../streamClient');
 const { s3Env } = require("../config");
 const mime = require('mime');
+const ytdl = require('ytdl-core');
+const Youtube = require('youtube-stream-url');
+const request = require('request');
+const ffmpeg = require('ffmpeg');
+const { getHeaderInfo } = require('../utils');
 
 // middleware that is specific to this router
 router.use((req, res, next) => {
@@ -14,6 +19,26 @@ router.use((req, res, next) => {
 // define the home page route
 router.get('/', (req, res) => {
   res.send('Videos home page');
+});
+
+router.get('/yt/:key', async (req, res, next) => {
+  const videoRange = req.headers.range;
+
+  const url = `https://www.youtube.com/watch?v=${req.params.key}`;
+
+  const info = await ytdl.getInfo(`${url}`);
+
+  const format = ytdl.chooseFormat(info.formats, { quality: 'highest', filter: 'audioandvideo' });
+
+  const { contentLength, mimeType } = format;
+
+  const { httpHeader, start, end } = getHeaderInfo(videoRange, { contentLength, mimeType });
+
+  res.writeHead(videoRange ? 206 : 200, httpHeader);
+
+  const stream = ytdl.downloadFromInfo(info, { format, range: { start, end } });
+  stream.pipe(res);
+
 });
 
 router.get('/:key', async (req, res) => {
@@ -67,30 +92,12 @@ router.get('/local/:key', async (req, res) => {
   const fileSize = videoStat.size;
   const videoRange = req.headers.range;
 
-  if (videoRange) {
-    const parts = videoRange.replace(/bytes=/, "").split("-");
-    const start = parseInt(parts[0], 10);
-    const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
-    const chunksize = (end - start) + 1;
+  const { httpHeader, start, end } = getHeaderInfo(videoRange, { contentLength: fileSize, mimeType: contentType });
 
-    const head = {
-      'Content-Range': `bytes ${start}-${end}/${fileSize}`,
-      'Accept-Ranges': 'bytes',
-      'Content-Length': chunksize,
-      'Content-Type': contentType,
-    };
-    res.writeHead(206, head);
+  res.writeHead(videoRange ? 206 : 200, httpHeader);
 
-    const videoStream = fs.createReadStream(videoPath, { start, end });
-    videoStream.pipe(res);
-  } else {
-    const head = {
-      'Content-Length': fileSize,
-      'Content-Type': contentType,
-    };
-    res.writeHead(200, head);
-    fs.createReadStream(videoPath).pipe(res);
-  }
+  const stream = fs.createReadStream(videoPath, { start, end });
+  stream.pipe(res);
 });
 
 module.exports = router;
