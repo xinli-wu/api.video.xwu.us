@@ -18,6 +18,21 @@ router.get('/', (req, res) => {
   res.send('Videos home page');
 });
 
+router.get('/yt/info/:key', async (req, res, next) => {
+  const url = `https://www.youtube.com/watch?v=${req.params.key}`;
+  const info = await ytdl.getInfo(`${url}`);
+  res.send(info);
+  next();
+});
+
+router.get('/yt/format/:key', async (req, res, next) => {
+  const url = `https://www.youtube.com/watch?v=${req.params.key}`;
+  const info = await ytdl.getInfo(`${url}`);
+  const format = ytdl.chooseFormat(info.formats, { quality: 'highest', filter: 'audioandvideo' });
+  res.send(format);
+  next();
+});
+
 router.get('/yt/:key', async (req, res, next) => {
   const videoRange = req.headers.range;
 
