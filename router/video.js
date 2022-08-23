@@ -6,9 +6,6 @@ const { sizeOf, createAWSStream } = require('../streamClient');
 const { s3Env } = require("../config");
 const mime = require('mime');
 const ytdl = require('ytdl-core');
-const Youtube = require('youtube-stream-url');
-const request = require('request');
-const ffmpeg = require('ffmpeg');
 const { getHeaderInfo } = require('../utils');
 
 // middleware that is specific to this router
