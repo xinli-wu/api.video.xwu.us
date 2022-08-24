@@ -43,8 +43,8 @@ router.get('/watch', async (req, res, next) => {
 
 });
 
-router.get('/thumbnail/:encodedUrl', async (req, res, next) => {
-  const r = await axios({ url: req.params.encodedUrl, method: 'GET', responseType: 'stream' });
+router.get('/thumbnail', async (req, res, next) => {
+  const r = await axios({ url: req.query.url, method: 'GET', responseType: 'stream' });
   r.data.pipe(res);
   next();
 });
