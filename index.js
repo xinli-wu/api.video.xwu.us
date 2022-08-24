@@ -1,5 +1,5 @@
 const express = require('express');
-const videoRoute = require('./router/video');
+const yt = require('./router/yt');
 const cors = require('cors');
 
 const app = express();
@@ -9,7 +9,7 @@ app.use(cors({
   origin: ['http://localhost:3000', 'https://video.xwu.us']
 }));
 
-app.use('/video', videoRoute);
+app.use('/yt', yt);
 
 app.listen(port, () => {
   console.log(`API listening on port ${port}`);
