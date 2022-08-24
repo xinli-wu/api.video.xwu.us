@@ -5,6 +5,7 @@ const { DateTime } = require("luxon");
 const ytdl = require('ytdl-core');
 const { getHeaderInfo } = require('../utils');
 const { searchVideo } = require('../lib/youTubeClient');
+const axios = require('axios');
 
 // middleware that is specific to this router
 router.use((req, res, next) => {
@@ -40,6 +41,12 @@ router.get('/watch', async (req, res, next) => {
   const stream = ytdl.downloadFromInfo(info, { format, range: { start, end } });
   stream.pipe(res);
 
+});
+
+router.get('/thumbnail/:encodedUrl', async (req, res, next) => {
+  const r = await axios({ url: req.params.encodedUrl, method: 'GET', responseType: 'stream' });
+  r.data.pipe(res);
+  next();
 });
 
 router.get('/info/:videoId', async (req, res, next) => {
