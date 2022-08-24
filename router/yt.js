@@ -30,7 +30,7 @@ router.get('/watch', async (req, res, next) => {
 
   const info = await ytdl.getInfo(`${url}`);
 
-  const format = ytdl.chooseFormat(info.formats, { quality: 'highest', filter: 'audioandvideo' });
+  const format = ytdl.chooseFormat(info.formats, { quality: 'lowest', filter: 'audioandvideo' });
 
   const { contentLength, mimeType } = format;
 
@@ -59,7 +59,7 @@ router.get('/info/:videoId', async (req, res, next) => {
 router.get('/format/:videoId', async (req, res, next) => {
   const url = `https://www.youtube.com/watch?v=${req.params.videoId}`;
   const info = await ytdl.getInfo(`${url}`);
-  const format = ytdl.chooseFormat(info.formats, { quality: 'highest', filter: 'audioandvideo' });
+  const format = ytdl.chooseFormat(info.formats, { quality: 'lowest', filter: 'audioandvideo' });
   res.send(format);
   next();
 });
