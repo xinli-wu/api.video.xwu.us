@@ -1,12 +1,5 @@
 const getHeaderInfo = (videoRange, { contentLength, mimeType }) => {
-  if (!videoRange) {
-    return {
-      httpHeader: {
-        'Content-Length': contentLength,
-        'Content-Type': mimeType,
-      }
-    };
-  }
+  if (!videoRange) return { httpHeader: { 'Content-Length': contentLength, 'Content-Type': mimeType } };
 
   const parts = videoRange.replace(/bytes=/, "").split("-");
   const start = parseInt(parts[0], 10);
@@ -27,6 +20,11 @@ const getHeaderInfo = (videoRange, { contentLength, mimeType }) => {
   return headerInfo;
 };
 
+const getFilteredFormats = ({ formats }) => {
+  return formats.filter(x => x.hasAudio && x.hasVideo && ('contentLength' in x)).sort((a, b) => a.itag - b.itag);
+};
+
 module.exports = {
-  getHeaderInfo
+  getHeaderInfo,
+  getFilteredFormats
 };
