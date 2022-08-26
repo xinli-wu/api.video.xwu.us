@@ -54,7 +54,7 @@ jobs:
         uses: azure/CLI@v1
         with:
           inlineScript: |
-            az acr run --cmd "acr purge --ago 1d" --registry api-video-xwu-us /dev/null
+            az acr run --cmd "acr purge --filter 'api-video-xwu-us:.*' --ago 1d" --registry msXwuACR /dev/null
 
       - name: Deploy to containerapp
         uses: azure/CLI@v1
