@@ -50,6 +50,11 @@ jobs:
         with:
           creds: ${{ secrets.APIVIDEOXWUUS_AZURE_CREDENTIALS }}
 
+      - name: Purge Previous Images
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az acr run --cmd "acr purge --ago 1d" --registry api-video-xwu-us /dev/null
 
       - name: Deploy to containerapp
         uses: azure/CLI@v1
