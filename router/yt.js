@@ -8,6 +8,7 @@ const { searchVideo } = require('../lib/youTubeClient');
 
 // middleware that is specific to this router
 router.use(async (req, res, next) => {
+
   console.log([DateTime.now().toISO()], `'${req.path}'`, req.params, req.query);
 
   const { v, q } = req.query;
