@@ -1,0 +1,60 @@
+name: Trigger auto deployment for api-video-xwu-us
+
+# When this action will be executed
+on:
+  # Automatically trigger it when detected changes in repo
+  push:
+    branches: 
+      [ main ]
+    paths:
+    - '**'
+    - '.github/workflows/api-video-xwu-us-AutoDeployTrigger-27bf9019-ac3d-47ce-b7f9-9bb62cd065a7.yml'
+
+  # Allow mannually trigger 
+  workflow_dispatch:      
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout to the branch
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Log in to container registry
+        uses: docker/login-action@v1
+        with:
+          registry: msxwuacr.azurecr.io
+          username: ${{ secrets.APIVIDEOXWUUS_REGISTRY_USERNAME }}
+          password: ${{ secrets.APIVIDEOXWUUS_REGISTRY_PASSWORD }}
+
+      - name: Build and push container image to registry
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          tags: msxwuacr.azurecr.io/api-video-xwu-us:${{ github.sha }}
+          file: ./Dockerfile
+          context: ./
+
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    
+    steps:
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.APIVIDEOXWUUS_AZURE_CREDENTIALS }}
+
+
+      - name: Deploy to containerapp
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az config set extension.use_dynamic_install=yes_without_prompt
+            az containerapp registry set -n api-video-xwu-us -g video-xwu-us --server msxwuacr.azurecr.io --username  ${{ secrets.APIVIDEOXWUUS_REGISTRY_USERNAME }} --password ${{ secrets.APIVIDEOXWUUS_REGISTRY_PASSWORD }}
+            az containerapp update -n api-video-xwu-us -g video-xwu-us --image msxwuacr.azurecr.io/api-video-xwu-us:${{ github.sha }}
