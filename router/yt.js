@@ -34,7 +34,7 @@ router.use(async (req, res, next) => {
     req['youtube'] = { q };
   }
 
-  res.set('Cache-control', 'public, max-age=7200');
+  res.set('Cache-control', 'public, max-age=3600');
   next();
 });
 
