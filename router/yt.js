@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { DateTime } = require("luxon");
+const dayjs = require('dayjs');
 const ytdl = require('ytdl-core');
 const axios = require('axios');
 const { getHeaderInfo, getFilteredFormats } = require('../utils');
@@ -9,7 +9,7 @@ const { searchVideo } = require('../lib/youTubeClient');
 // middleware that is specific to this router
 router.use(async (req, res, next) => {
 
-  console.log([DateTime.now().toISO()], `'${req.path}'`, req.params, req.query);
+  console.log([dayjs().toISOString()], `'${req.path}'`, req.params, req.query);
 
   const { v, q } = req.query;
   if (typeof v === 'string') {
