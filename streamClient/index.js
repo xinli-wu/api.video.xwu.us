@@ -8,10 +8,8 @@ const s3 = new AWS.S3({
 });
 
 async function sizeOf(bucketParams) {
-  return s3.headObject(bucketParams)
-    .promise();
+  return s3.headObject(bucketParams).promise();
 }
-
 
 async function createAWSStream(bucketParams) {
   return new Promise((resolve, reject) => {
@@ -20,9 +18,7 @@ async function createAWSStream(bucketParams) {
         if (error) {
           throw error;
         };
-
         const stream = new SmartStream(bucketParams, s3, data.ContentLength);
-
         resolve(stream);
       });
     } catch (error) {
