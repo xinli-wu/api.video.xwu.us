@@ -1,12 +1,12 @@
 {
   "name": "api.video.xwu.us",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "src/index.js",
   "repository": "git@github.com:wuxinli1025/api.video.xwu.us.git",
   "author": "Xinli WU <ryan7gm@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "dev": "nodemon index.js",
+    "dev": "nodemon",
     "build": "esbuild index.js --bundle --minify --platform=node --external:./node_modules/* --outfile=dist/index.js",
     "start": "node index.js"
   },
