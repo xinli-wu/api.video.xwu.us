@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "nodemon",
     "build": "esbuild src/index.js --bundle --minify --platform=node --external:./node_modules/* --outfile=dist/index.js",
-    "start": "node index.js"
+    "serve": "node dist/index.js"
   },
   "dependencies": {
     "aws-sdk": "^2.1199.0",
@@ -24,7 +24,6 @@
   },
   "devDependencies": {
     "esbuild": "^0.15.10",
-    "nodemon": "^2.0.16",
-    "webpack": "^5.72.1"
+    "nodemon": "^2.0.16"
   }
 }
