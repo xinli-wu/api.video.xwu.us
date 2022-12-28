@@ -18,14 +18,16 @@ router.use(async (req, res, next) => {
       return;
     }
     const url = `https://www.youtube.com/watch?v=${v}`;
-    const info = await ytdl.getInfo(`${url}`);
+    const info = await ytdl.getInfo(url);
+    // const copy = info.formats.map(format => ({ ...format, url: null }));
+    // console.table(copy);
     const filteredFormats = getFilteredFormats({ formats: info.formats });
     if (info.formats.length && !filteredFormats.length) {
       res.send({ error: true, message: 'Video found, but not available to watch' });
       return;
     }
 
-    const format = ytdl.chooseFormat(info.formats, { quality: filteredFormats[0].itag });
+    const format = ytdl.chooseFormat(info.formats, { format: filteredFormats[0] });
 
     req['youtube'] = { v, url, info, format };
   }
@@ -45,11 +47,47 @@ router.get('/search', async (req, res) => {
 });
 
 router.get('/watch', async (req, res) => {
+  const { range } = req.headers;
   const { info, format } = req['youtube'];
 
-  const { range } = req.headers;
-
   const { contentLength, mimeType } = format;
+
+  const { httpHeader, start, end } = getHeaderInfo(range, { contentLength, mimeType });
+
+  res.writeHead(range ? 206 : 200, httpHeader);
+
+  const stream = ytdl.downloadFromInfo(info, { format, range: { start, end } });
+  stream.pipe(res);
+});
+
+router.get('/video', async (req, res) => {
+  const { range } = req.headers;
+  const { info } = req['youtube'];
+  const filteredFormats = info.formats.filter(x => x.hasVideo && ('contentLength' in x));
+  // const copy = filteredFormats.map(format => ({ ...format, url: null }));
+  // console.table(copy);
+
+  const format = ytdl.chooseFormat(info.formats, { format: filteredFormats[1] });
+  const { contentLength, mimeType } = format;
+
+  const { httpHeader, start, end } = getHeaderInfo(range, { contentLength, mimeType });
+
+  res.writeHead(range ? 206 : 200, httpHeader);
+
+  const stream = ytdl.downloadFromInfo(info, { format, range: { start, end } });
+  stream.pipe(res);
+});
+
+router.get('/audio', async (req, res) => {
+  const { range } = req.headers;
+  const { info } = req['youtube'];
+  const filteredFormats = info.formats.filter(x => x.hasAudio && ('contentLength' in x));
+  // const copy = filteredFormats.map(format => ({ ...format, url: null }));
+  // console.table(copy);
+
+  const format = ytdl.chooseFormat(info.formats, { format: filteredFormats[0] });
+  const { contentLength, mimeType } = format;
+
   const { httpHeader, start, end } = getHeaderInfo(range, { contentLength, mimeType });
 
   res.writeHead(range ? 206 : 200, httpHeader);
